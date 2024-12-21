@@ -4,144 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tetris Game</title>
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background: #111;
-      color: #fff;
-      font-family: Arial, sans-serif;
-    }
-    #game-container {
-      display: grid;
-      grid-template-rows: repeat(20, 30px);
-      grid-template-columns: repeat(10, 30px);
-      gap: 1px;
-      background: #333;
-    }
-    .cell {
-      width: 30px;
-      height: 30px;
-      background: #222;
-    }
-    .active {
-      background: #f39c12;
-    }
-    .fixed {
-      background: #e74c3c;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div>
-    <h1>Tetris Game</h1>
-    <div id="game-container"></div>
-    <p>Use arrow keys to move and rotate the pieces.</p>
+  <div class="container">
+    <canvas id="tetris" width="300" height="600"></canvas>
+    <div class="info">
+      <button class="button" id="start">Start</button>
+      <span id="score">Score: 0</span>
+    </div>
   </div>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-    $(document).ready(function() {
-      const ROWS = 20;
-      const COLS = 10;
-      const gameContainer = $("#game-container");
-      let grid = [];
-      let activePiece = {
-        shape: [],
-        row: 0,
-        col: 0
-      };
 
-      // Initialize the grid
-      function initGrid() {
-        grid = [];
-        gameContainer.empty();
-        for (let r = 0; r < ROWS; r++) {
-          let row = [];
-          for (let c = 0; c < COLS; c++) {
-            const cell = $("<div class='cell'></div>");
-            gameContainer.append(cell);
-            row.push(cell);
-          }
-          grid.push(row);
-        }
-      }
+  <script src="script.js"></script>
 
-      // Define Tetromino shapes
-      const TETROMINOS = [
-        [[1, 1, 1], [0, 1, 0]], // T
-        [[1, 1], [1, 1]],       // O
-        [[1, 1, 1, 1]],         // I
-        [[1, 1, 0], [0, 1, 1]], // S
-        [[0, 1, 1], [1, 1, 0]], // Z
-        [[1, 1, 1], [1, 0, 0]], // L
-        [[1, 1, 1], [0, 0, 1]]  // J
-      ];
-
-      // Spawn a new piece
-      function spawnPiece() {
-        const randomIndex = Math.floor(Math.random() * TETROMINOS.length);
-        activePiece.shape = TETROMINOS[randomIndex];
-        activePiece.row = 0;
-        activePiece.col = Math.floor(COLS / 2) - 1;
-      }
-
-      // Draw the grid
-      function drawGrid() {
-        grid.forEach(row => row.forEach(cell => cell.removeClass("active fixed")));
-
-        // Draw active piece
-        activePiece.shape.forEach((row, r) => {
-          row.forEach((value, c) => {
-            if (value) {
-              const targetRow = activePiece.row + r;
-              const targetCol = activePiece.col + c;
-              if (targetRow >= 0 && targetCol >= 0 && targetRow < ROWS && targetCol < COLS) {
-                grid[targetRow][targetCol].addClass("active");
-              }
-            }
-          });
-        });
-      }
-
-      // Move the piece
-      function movePiece(deltaRow, deltaCol) {
-        activePiece.row += deltaRow;
-        activePiece.col += deltaCol;
-        drawGrid();
-      }
-
-      // Rotate the piece
-      function rotatePiece() {
-        const newShape = activePiece.shape[0].map((_, colIndex) =>
-          activePiece.shape.map(row => row[colIndex]).reverse()
-        );
-        activePiece.shape = newShape;
-        drawGrid();
-      }
-
-      // Game loop
-      function gameLoop() {
-        movePiece(1, 0);
-        setTimeout(gameLoop, 500);
-      }
-
-      // Controls
-      $(document).keydown(function(e) {
-        if (e.key === "ArrowLeft") movePiece(0, -1);
-        if (e.key === "ArrowRight") movePiece(0, 1);
-        if (e.key === "ArrowDown") movePiece(1, 0);
-        if (e.key === "ArrowUp") rotatePiece();
-      });
-
-      // Start the game
-      initGrid();
-      spawnPiece();
-      drawGrid();
-      gameLoop();
-    });
-  </script>
 </body>
 </html>
